@@ -98,7 +98,7 @@
     }
 
     const getNearest = (myPlayer, them) => {
-        let nearest = {object:null,dist:null};
+        let nearest = {object:null,dist:999999999999999999999};
         them.forEach((obj, ts) =>{
             if(!obj){};
 
@@ -132,7 +132,7 @@
 
                 let dist = calcDist2d(myPlayer, obj);
 
-                if(!nearest.dist || dist < nearest.dist){
+                if(dist < nearest.dist){
                     nearest.dist=dist;
                     nearest.object=obj;
                 }
@@ -159,9 +159,9 @@
     };
 
     window.getTargetDelta = function(them, us, dist){
-        return {x: them.x - us.x + them.dx * dist / us.weapon.subClass.velocity,
-                y: them.y - us.y + them.dy * dist / us.weapon.subClass.velocity - (((dist/us.weapon.subClass.velocity)**2)/2)*0.012 + 0.092,
-                z: them.z - us.z + them.dz * dist / us.weapon.subClass.velocity,
+        return {x: them.x - us.x + 10*(them.dx * dist / us.weapon.subClass.velocity),
+                y: them.y - us.y + them.dy * dist / us.weapon.subClass.velocity - (((dist/us.weapon.subClass.velocity)**2)/2)*0.012 - 0.092,
+                z: them.z - us.z + 10*(them.dz * dist / us.weapon.subClass.velocity),
                };
     };
 
@@ -190,9 +190,9 @@
 
         let shotSpread_per_MS = Dss / Dt;
 
-        let spread = us.shotSpread - shotSpread_per_MS*getPing() + us.weapon.inaccuracy;
+        let spread = us.shotSpread - shotSpread_per_MS*getPing()/5 + us.weapon.inaccuracy;
         //var spread = 0;
-
+        if(spread < 0.1){return delta};
         if (isNaN(spread)) {
             spread = 0;
         }
